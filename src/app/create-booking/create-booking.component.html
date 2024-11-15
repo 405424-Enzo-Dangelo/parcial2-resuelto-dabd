@@ -1,0 +1,258 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col">
+      <h2>Crear Nueva Reserva</h2>
+    </div>
+  </div>
+
+  <form class="mt-4" [formGroup]="bookingForm" (ngSubmit)="createBooking()">
+    <!-- Datos de la Empresa -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">Datos de la Empresa</h3>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label required">Nombre de la Empresa</label>
+          <input type="text" class="form-control" placeholder="Ingrese el nombre de la empresa" formControlName="companyName">
+          <div *ngIf="bookingForm.get('companyName')!.touched && bookingForm.get('companyName')!.invalid">
+            <div *ngIf="bookingForm.get('companyName')!.errors?.['required']" class="text-danger">
+              El nombre de la empresa es requerido.
+            </div>
+            <div *ngIf="bookingForm.get('companyName')!.errors?.['minlength']" class="text-danger">
+              El nombre de la empresa debe tener al menos 5 caracteres.
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label required">Email Corporativo</label>
+          <input type="email" class="form-control" placeholder="ejemplo@empresa.com" formControlName="companyEmail">
+          <div *ngIf="bookingForm.get('companyEmail')!.touched && bookingForm.get('companyEmail')!.invalid">
+            <div *ngIf="bookingForm.get('companyEmail')!.errors?.['required']" class="text-danger">
+              El email corporativo es requerido.
+            </div>
+            <div *ngIf="bookingForm.get('companyEmail')!.errors?.['email']" class="text-danger">
+              Ingrese el formato email.
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label required">Teléfono de Contacto</label>
+          <input type="tel" class="form-control" placeholder="+54 11 1234-5678" formControlName="contactPhone">
+          <div *ngIf="bookingForm.get('contactPhone')!.touched && bookingForm.get('contactPhone')!.invalid">
+            <div *ngIf="bookingForm.get('contactPhone')!.errors?.['required']" class="text-danger">
+              El teléfono de contacto es requerido.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalles del Evento -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">Detalles del Evento</h3>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label required">Lugar del Evento</label>
+          <select class="form-select" formControlName="venueId">
+            <option value="">Seleccione un lugar</option>
+            <option *ngFor="let venue of venues" [value]="venue.id">{{ venue.name }}</option>
+          </select>
+          <div *ngIf="bookingForm.get('venueId')!.touched && bookingForm.get('venueId')!.invalid">
+            <div *ngIf="bookingForm.get('venueId')!.errors?.['required']" class="text-danger">
+              El lugar del evento es requerido.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label required">Fecha</label>
+              <input type="date" class="form-control" formControlName="eventDate">
+              <div *ngIf="bookingForm.get('eventDate')!.touched && bookingForm.get('eventDate')!.invalid">
+                <div *ngIf="bookingForm.get('eventDate')!.errors?.['required']" class="text-danger">
+                  La fecha del evento es requerida.
+                </div>
+                <div *ngIf="bookingForm.get('eventDate')?.touched && bookingForm.get('eventDate')?.errors?.['unavailable']">
+                  <small class="text-danger">La fecha del evento seleccionada se encuentra ya ocupada</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label required">Hora de Inicio</label>
+              <input type="time" class="form-control" formControlName="startTime">
+              <div *ngIf="bookingForm.get('startTime')!.touched && bookingForm.get('startTime')!.invalid">
+                <div *ngIf="bookingForm.get('startTime')!.errors?.['required']" class="text-danger">
+                  La hora de inicio es requerida.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label required">Hora de Finalización</label>
+              <input type="time" class="form-control" formControlName="endTime">
+              <div *ngIf="bookingForm.get('endTime')!.touched && bookingForm.get('endTime')!.invalid">
+                <div *ngIf="bookingForm.get('endTime')!.errors?.['required']" class="text-danger">
+                  La hora de finalización es requerida.
+                </div>
+              </div>
+              <div *ngIf="bookingForm.errors?.['timeError']" class="text-danger">
+                <small class="text-danger">La hora de fin debe ser mayor que la hora de inicio</small>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label required">Cantidad Total de Personas</label>
+          <input type="number" class="form-control" formControlName="totalPeople">
+          <div *ngIf="bookingForm.get('totalPeople')!.touched && bookingForm.get('totalPeople')!.invalid">
+            <div *ngIf="bookingForm.get('totalPeople')!.errors?.['required']" class="text-danger">
+              La cantidad total de personas es requerida.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Servicios Adicionales -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h3 class="h5 mb-0">Servicios Adicionales</h3>
+    <button type="button" class="btn btn-light btn-sm" (click)="addService()">
+      + Agregar Servicio
+    </button>
+  </div>
+
+  <div formArrayName="services">
+    <div *ngFor="let service of servicesFormArray.controls; let i = index" [formGroupName]="i">
+      <div class="card-body">
+        <div class="border rounded p-3 mb-3 position-relative">
+          <button type="button" class="btn-close position-absolute top-0 end-0 m-2" (click)="removeService(i)"></button>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label required">Tipo de Servicio</label>
+                <select class="form-select" formControlName="serviceId">
+                  <option value="">Seleccione un servicio</option>
+                  <option *ngFor="let service of services" [value]="service.id">{{ service.name }}</option>
+                </select>
+                <div *ngIf="service.get('serviceId')!.touched && service.get('serviceId')!.invalid">
+                  <div *ngIf="service.get('serviceId')!.errors?.['required']" class="text-danger">
+                    El tipo de servicio es requerido.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label required">Cantidad de Personas</label>
+                <input type="number" class="form-control" formControlName="quantity">
+                <div *ngIf="service.get('quantity')!.touched && service.get('quantity')!.invalid">
+                  <div *ngIf="service.get('quantity')!.errors?.['required']" class="text-danger">
+                    La cantidad de personas es requerida.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label required">Hora de Inicio</label>
+                <input type="time" class="form-control" formControlName="startTime">
+                <div *ngIf="service.get('startTime')!.touched && service.get('startTime')!.invalid">
+                  <div *ngIf="service.get('startTime')!.errors?.['required']" class="text-danger">
+                    La hora de inicio es requerida.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label required">Hora de Finalización</label>
+                <input type="time" class="form-control" formControlName="endTime">
+                <div *ngIf="service.get('endTime')!.touched && service.get('endTime')!.invalid">
+                  <div *ngIf="service.get('endTime')!.errors?.['required']" class="text-danger">
+                    La hora de finalización es requerida.
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <small class="text-muted">
+              Subtotal del servicio: ${{ servicesFormArray.controls[i].get("subTotal")?.value }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Resumen de Costos -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">Resumen de Costos</h3>
+      </div>
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="col">
+            <h6>Subtotal:</h6>
+          </div>
+          <div class="col-auto">
+            <h6>${{subTotal.toFixed(2)}}</h6>
+          </div>
+        </div>
+
+        <div class="row mb-2 text-success">
+          <div class="col">
+            <h6>Descuento (15%):</h6>
+            <small>¡Descuento aplicado por grupo mayor a 100 personas!</small>
+          </div>
+          <div class="col-auto">
+            <h6>-${{discount.toFixed(2)}}</h6>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+          <div class="col">
+            <h5 class="mb-0">Total Final:</h5>
+          </div>
+          <div class="col-auto">
+            <h5 class="mb-0">${{total.toFixed(2)}}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón Submit -->
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-primary btn-lg" [disabled]="!bookingForm.valid">
+        Crear Reserva
+      </button>
+    </div>
+  </form>
+</div>
+
